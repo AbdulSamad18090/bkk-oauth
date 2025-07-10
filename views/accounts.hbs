@@ -10,7 +10,7 @@
 </head>
 
 <body class="min-h-screen bg-gray-100 text-gray-800 p-8">
-  <div class="max-w-2xl mx-auto h-full bg-white rounded-xl shadow-lg p-6">
+  <div class="max-w-2xl mx-auto h-full bg-white rounded-xl shadow-md border p-6">
     <!-- Logo -->
     <div class="w-full flex justify-center mb-6">
       <img src="/assets/images/logo.png" alt="logo" class="h-20 w-auto" />
@@ -21,8 +21,8 @@
     <div class="space-y-4">
       <!-- User Info Card -->
       <div id="logged-in-account"
-        class="flex items-center justify-between bg-green-50 border border-green-500 shadow-md rounded-2xl p-4 cursor-pointer">
-        <div class="flex items-center gap-4">
+        class="flex items-center justify-between bg-green-50 border border-green-500 shadow-md rounded-full p-2 cursor-pointer">
+        <div class="flex items-center gap-2">
           <img src="/assets/images/concent-screen-img.png" alt="pp"
             class="object-cover w-10 h-10 rounded-full border border-green-500 shadow" />
           <p class="text-lg font-medium text-gray-900">@{{user.username}}</p>
@@ -39,7 +39,7 @@
       {{!-- Divider --}}
       <div class="flex items-center justify-between">
         <div class="w-full h-[1px] bg-green-500"></div>
-        <span class="text-center text-xs px-1 w-20 rounded-full bg-gray-100 border-[1.5px] border-green-500">Or</span>
+        <span class="text-center text-xs px-1 w-20 rounded-full bg-green-50 border-[1.5px] border-green-500">Or</span>
         <div class="w-full h-[1px] bg-green-500"></div>
       </div>
       {{!-- Login Another Acccount Button --}}
@@ -49,7 +49,10 @@
           <i data-lucide="log-in" class="w-4 h-4"></i>
           <p>Signin to Another Account</p>
         </div>
-        <p class="text-xs pt-1">NOTE: This will log you out from all of your accounts</p>
+        <p class="text-xs text-center pt-1 font-bold flex items-center justify-center gap-2">
+          <i data-lucide="circle-alert" class="w-4 h-4"></i>
+          This will log you out from all of your accounts
+        </p>
       </button>
     </div>
   </div>
