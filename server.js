@@ -43,13 +43,37 @@ app.use(
     })
 );
 
-app.post("/login", passport.authenticate("local"), (req, res) => {
-    const redirectTo = req.body.returnTo || req.session.returnTo || "/";
-    console.log("/login", {
-        redirectTo,
-        user: req.user,
-    });
-    res.redirect(redirectTo);
+app.post("/login", (req, res, next) => {
+    passport.authenticate("local", (err, user, info) => {
+        if (err) {
+            console.error("Login error:", err);
+            return res.status(500).render("login", {
+                error: "An unexpected error occurred. Please try again.",
+                returnTo: req.body.returnTo || "/",
+            });
+        }
+
+        if (!user) {
+            return res.status(401).render("login", {
+                error: "Invalid username or password.",
+                returnTo: req.body.returnTo || "/",
+            });
+        }
+
+        req.logIn(user, (err) => {
+            if (err) {
+                console.error("Login session error:", err);
+                return res.status(500).render("login", {
+                    error: "Could not start session. Try again later.",
+                    returnTo: req.body.returnTo || "/",
+                });
+            }
+
+            const redirectTo = req.body.returnTo || req.session.returnTo || "/";
+            console.log("/login success", { user, redirectTo });
+            return res.redirect(redirectTo);
+        });
+    })(req, res, next);
 });
 
 app.get("/logout", (req, res) => {
