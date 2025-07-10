@@ -21,7 +21,7 @@
         const authUrl = `${authServer}/authorize?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(
           redirectUri
         )}`;
-        const width = 600;
+        const width = 500;
         const height = 600;
         const left = (screen.width - width) / 2;
         const top = (screen.height - height) / 2;
@@ -43,10 +43,10 @@
           const code = fullUrl.searchParams.get("code");
 
           if (code) {
+            history.replaceState(null, "", fullUrl.href);
             await generateAccessToken(code);
             await generateRefreshToken();
             await generateAccessTokenByPassword();
-            window.location.href = fullUrl.href;
           }
         }
       });
