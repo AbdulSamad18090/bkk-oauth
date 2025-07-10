@@ -52,6 +52,19 @@ app.post("/login", passport.authenticate("local"), (req, res) => {
     res.redirect(redirectTo);
 });
 
+app.get("/logout", (req, res) => {
+    req.logout(() => {
+        req.session.destroy((err) => {
+            const redirectUri = req.query.redirect_uri || "/login";
+            if (err) {
+                console.error("Logout error:", err);
+                return res.redirect("/login");
+            }
+            res.redirect(redirectUri);
+        });
+    });
+});
+
 function ensureLoggedIn(req, res, next) {
     console.log("ensureLoggedIn", req.originalUrl);
     if (req.isAuthenticated()) {

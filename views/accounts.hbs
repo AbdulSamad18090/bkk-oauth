@@ -16,7 +16,7 @@
       <img src="/assets/images/logo.png" alt="logo" class="h-20 w-auto" />
     </div>
 
-    <h1 class="text-2xl font-bold mb-4">Your Accounts</h1>
+    <h1 class="text-2xl font-bold mb-4">Your Account</h1>
 
     <div class="space-y-4">
       <!-- User Info Card -->
@@ -28,11 +28,12 @@
           <p class="text-lg font-medium text-gray-900">@{{user.username}}</p>
         </div>
         <div class="flex items-center justify-center">
-          <a href="/logout"
+          <a id="logout-btn"
             class="inline-flex items-center gap-2 bg-red-100 text-red-600 hover:bg-red-600 hover:text-white transition-all px-4 py-2 rounded-full font-medium text-sm shadow-sm">
             <i data-lucide="log-out" class="w-4 h-4"></i>
             Logout
           </a>
+
         </div>
       </div>
       {{!-- Divider --}}
@@ -68,12 +69,17 @@
       window.location.href = authUrl;
     });
 
-    loginBtn.addEventListener("click", () => {
-      alert("clicked")
-      // logout from all accounts
-      // redirect to login
+    document.getElementById("logout-btn").addEventListener("click", (e) => {
+      e.preventDefault();
+      window.location.href = `${authServer}/logout?redirect_uri=${encodeURIComponent("/accounts")}`;
     });
 
+
+    loginBtn.addEventListener("click", () => {
+      window.location.href = `${authServer}/logout?redirect_uri=${encodeURIComponent(
+        `/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}`
+      )}`;
+    });
   </script>
 </body>
 
