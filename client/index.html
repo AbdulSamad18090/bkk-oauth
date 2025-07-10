@@ -37,11 +37,17 @@
 
       // Receive OAuth code from popup
       window.addEventListener("message", async (event) => {
-        if (event.data?.type === "OAUTH_CODE" && event.data.code) {
-          const code = event.data.code;
-          await generateAccessToken(code);
-          await generateRefreshToken();
-          await generateAccessTokenByPassword();
+        if (event.data?.type === "OAUTH_COMPLETE" && event.data.fullUrl) {
+          const fullUrl = new URL(event.data.fullUrl);
+          console.log("Full URL ===>", fullUrl);
+          const code = fullUrl.searchParams.get("code");
+
+          if (code) {
+            await generateAccessToken(code);
+            await generateRefreshToken();
+            await generateAccessTokenByPassword();
+            window.location.href = fullUrl.href;
+          }
         }
       });
 

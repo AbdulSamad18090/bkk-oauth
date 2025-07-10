@@ -1,64 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Authorize Access</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <style>
-      body {
-        background-image: url('/assets/images/concent-screen-img.png');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-blend-mode: darken;
-      }
-    </style>
-  </head>
-  <body class="min-h-screen flex items-center justify-center bg-black/40">
-    <div class="bg-white/90 backdrop-blur-md p-6 sm:p-10 rounded-2xl shadow-xl w-full max-w-md text-center">
 
-      <!-- Header -->
-      <div class="mb-6">
-        <i data-lucide="shield-check" class="text-green-600 w-10 h-10 mx-auto mb-3"></i>
-        <h2 class="text-xl font-bold text-gray-800">Authorize Access</h2>
-        <p class="text-sm text-gray-600 mt-1">
-          Do you approve this application to access your data?
-        </p>
-      </div>
+<head>
+  <meta charset="UTF-8" />
+  <title>Authorizing Access...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
 
-      <!-- Consent Form -->
-      <form method="POST" action="/authorize/decision" class="space-y-4">
-        <input type="hidden" name="transaction_id" value="{{transactionID}}" />
-
-        <div class="flex justify-center gap-4">
-          <button
-            name="approve"
-            value="yes"
-            class="bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700 transition"
-          >
-            Yes, Approve
-          </button>
-
-          <button
-            name="cancel"
-            value="no"
-            class="bg-red-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-red-600 transition"
-          >
-            No, Deny
-          </button>
-        </div>
-      </form>
-
-      <!-- Footer -->
-      <p class="text-xs text-gray-500 mt-6">
-        Your data is safe and will not be shared without your permission.
-      </p>
+<body class="min-h-screen flex items-center justify-center bg-black/40">
+  <div class="bg-white/90 backdrop-blur-md p-6 sm:p-10 rounded-2xl shadow-xl w-full max-w-md text-center">
+    <!-- Spinner -->
+    <div class="flex justify-center items-center gap-3 mb-3">
+      <svg class="animate-spin h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+        viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+      </svg>
+      <p class="text-sm text-gray-700">Authorizing...</p>
     </div>
+    <p class="text-xs text-gray-500">This may take a few seconds.</p>
+  </div>
 
-    <script>
-      lucide.createIcons();
-    </script>
-  </body>
+  <script>
+    lucide.createIcons();
+
+    window.addEventListener("DOMContentLoaded", async () => {
+      const transactionId = "{{transactionID}}"; // Will be interpolated server-side
+
+      try {
+        const response = await fetch("/authorize/decision", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: new URLSearchParams({
+            transaction_id: transactionId,
+            approve: "yes"
+          }),
+          redirect: "follow"
+        });
+
+        // After POST, OAuth2 server will respond with a redirect
+        if (response.ok) {
+          window.opener.postMessage(
+            {
+              type: "OAUTH_COMPLETE",
+              fullUrl: response.url
+            },
+            "*"
+          );
+          window.close()
+        } else {
+          document.body.innerHTML = `
+            <div class="text-center p-6">
+              <h2 class="text-xl font-semibold text-red-600">Authorization Failed</h2>
+              <p class="text-gray-700 mt-2">Could not complete authorization.</p>
+            </div>
+          `;
+        }
+      } catch (err) {
+        console.error("Authorization error:", err);
+        document.body.innerHTML = `
+          <div class="text-center p-6">
+            <h2 class="text-xl font-semibold text-red-600">Network Error</h2>
+            <p class="text-gray-700 mt-2">Failed to reach the server. Please try again.</p>
+          </div>
+        `;
+      }
+    });
+  </script>
+</body>
+
 </html>
